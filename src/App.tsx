@@ -12,11 +12,11 @@ import { Header } from './components/Header';
 import { QueryToolbar } from './components/query/QueryToolbar';
 import { GraphCanvas } from './components/canvas/GraphCanvas';
 import { NodeInspector } from './components/inspector/NodeInspector';
-import { RuntimeSimulator } from './components/runtime/RuntimeSimulator';
 import { ArchitectureDoc } from './components/architecture/ArchitectureDoc';
 import { IndexMemoryViewer } from './components/inspector/IndexMemoryViewer';
 import { EventTimelineViewer } from './components/inspector/EventTimelineViewer';
 import { ImportExportModal } from './components/ImportExportModal';
+import { PanelRightOpen } from 'lucide-react';
 
 import {
   selectedPresetAtom,
@@ -31,6 +31,8 @@ import {
   isSimulatingAtom,
   clearSelectionActionAtom,
   resetFiltersActionAtom,
+  isInspectorOpenAtom,
+  inspectorTabAtom,
 } from './store/atoms';
 
 export default function App() {
@@ -45,6 +47,8 @@ export default function App() {
   const selectedEdgeId = useAtomValue(selectedEdgeIdAtom);
   const [, setActivePulseEdgeId] = useAtom(activePulseEdgeIdAtom);
   const [isSimulating, setIsSimulating] = useAtom(isSimulatingAtom);
+  const [isInspectorOpen, setIsInspectorOpen] = useAtom(isInspectorOpenAtom);
+  const [inspectorTab, setInspectorTab] = useAtom(inspectorTabAtom);
   const clearSelection = useSetAtom(clearSelectionActionAtom);
   const resetFilters = useSetAtom(resetFiltersActionAtom);
 
@@ -348,15 +352,34 @@ export default function App() {
                 focusedPathEdgeIds={focusedPathEdgeIds}
                 runtimeStates={runtimeStates}
               />
+
+              {/* Floating button to reopen inspector when completely closed */}
+              {!isInspectorOpen && (
+                <button
+                  id="btn-reopen-inspector"
+                  onClick={() => setIsInspectorOpen(true)}
+                  title="展开右侧详情与运行面板"
+                  className="absolute right-4 top-4 z-30 flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900/90 hover:bg-neutral-800 text-neutral-200 border border-neutral-700 rounded-lg shadow-xl text-xs backdrop-blur cursor-pointer transition hover:border-emerald-500/50"
+                >
+                  <PanelRightOpen className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="font-medium">展开面板</span>
+                </button>
+              )}
             </main>
 
-            {/* Right Side Inspector */}
+            {/* Right Side Inspector (Supports complete closure and 3 tabs: overview, detail, runtime) */}
             <NodeInspector
+              isOpen={isInspectorOpen}
+              onClose={() => setIsInspectorOpen(false)}
+              activeTab={inspectorTab}
+              onTabChange={setInspectorTab}
               selectedNode={selectedNode}
               selectedEdge={selectedEdge}
               parents={selectedParents}
               children={selectedChildren}
               runtimeState={selectedNodeId ? runtimeStates.get(selectedNodeId) : undefined}
+              runtimeStates={runtimeStates}
+              events={events}
               onTriggerEvent={(nodeId) => {
                 const triggerable = selectedPreset.triggerableEvents.find(
                   (t) => t.id === nodeId
@@ -367,25 +390,23 @@ export default function App() {
                   runtimeStore.triggerEvent(nodeId, { clickedAt: Date.now() });
                 }
               }}
+              onTriggerPresetEvent={handleTriggerPresetEvent}
+              onResetStates={() => {
+                runtimeStore.resetStates();
+                for (const [key, val] of Object.entries(selectedPreset.initialValues)) {
+                  const matching = graph
+                    .getAllNodes()
+                    .find((n) => n.id.includes(key));
+                  if (matching) runtimeStore.set(matching.id, val, 'update');
+                }
+                setRuntimeStates(new Map(runtimeStore.getAll()));
+              }}
+              isSimulating={isSimulating}
               allNodes={graph.getAllNodes()}
               allEdges={graph.getAllEdges()}
+              scenario={selectedPreset}
             />
           </div>
-
-          {/* Bottom Runtime Simulator Bar */}
-          <RuntimeSimulator
-            onTriggerPresetEvent={handleTriggerPresetEvent}
-            onResetStates={() => {
-              runtimeStore.resetStates();
-              for (const [key, val] of Object.entries(selectedPreset.initialValues)) {
-                const matching = graph
-                  .getAllNodes()
-                  .find((n) => n.id.includes(key));
-                if (matching) runtimeStore.set(matching.id, val, 'update');
-              }
-              setRuntimeStates(new Map(runtimeStore.getAll()));
-            }}
-          />
         </div>
       )}
 

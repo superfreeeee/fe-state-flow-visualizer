@@ -1,0 +1,6 @@
+{
+  "name": "Frontend State Flow Visualizer",
+  "description": "Universal frontend state flow visualizer and runtime inspector with graph models, framework adapters, interactive DAG layout, and query engine.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

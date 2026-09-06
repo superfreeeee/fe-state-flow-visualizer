@@ -4,14 +4,14 @@ import { Graph } from '@state-flow/common';
 import { RuntimeStore } from '../../core/runtime/RuntimeStore';
 
 interface IndexMemoryViewerProps {
-  graph: Graph;
+  graph: Graph | null;
   runtimeStore: RuntimeStore;
 }
 
-export const IndexMemoryViewer: React.FC<IndexMemoryViewerProps> = ({
-  graph,
-  runtimeStore,
-}) => {
+export const IndexMemoryViewer: React.FC<IndexMemoryViewerProps> = ({ graph, runtimeStore }) => {
+  if (!graph) {
+    return <div>no graph</div>;
+  }
   const index = graph.getIndex();
   const allNodes = graph.getAllNodes();
   const allEdges = graph.getAllEdges();
@@ -34,9 +34,13 @@ export const IndexMemoryViewer: React.FC<IndexMemoryViewerProps> = ({
             </p>
           </div>
           <div className="flex items-center gap-2 text-[11px] text-neutral-400 bg-neutral-900 px-3 py-1.5 rounded-lg border border-neutral-800">
-            <span>Nodes in Hash: <strong className="text-emerald-400">{allNodes.length}</strong></span>
+            <span>
+              Nodes in Hash: <strong className="text-emerald-400">{allNodes.length}</strong>
+            </span>
             <span className="text-neutral-600">|</span>
-            <span>Edges in Hash: <strong className="text-sky-400">{allEdges.length}</strong></span>
+            <span>
+              Edges in Hash: <strong className="text-sky-400">{allEdges.length}</strong>
+            </span>
           </div>
         </div>
 
@@ -48,10 +52,7 @@ export const IndexMemoryViewer: React.FC<IndexMemoryViewerProps> = ({
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {Array.from(index.nodesByKind.entries()).map(([kind, nodeIds]) => (
-              <div
-                key={kind}
-                className="bg-neutral-950 p-3 rounded-lg border border-neutral-800"
-              >
+              <div key={kind} className="bg-neutral-950 p-3 rounded-lg border border-neutral-800">
                 <div className="flex items-center justify-between text-neutral-400 mb-2">
                   <span className="text-emerald-400 font-bold">{kind}</span>
                   <span className="text-[10px] bg-neutral-900 px-1.5 py-0.5 rounded text-neutral-500">
@@ -60,10 +61,7 @@ export const IndexMemoryViewer: React.FC<IndexMemoryViewerProps> = ({
                 </div>
                 <div className="text-[11px] text-neutral-400 flex flex-wrap gap-1">
                   {Array.from(nodeIds).map((id) => (
-                    <span
-                      key={id}
-                      className="bg-neutral-900 px-1.5 py-0.5 rounded text-neutral-300 text-[10px]"
-                    >
+                    <span key={id} className="bg-neutral-900 px-1.5 py-0.5 rounded text-neutral-300 text-[10px]">
                       {id}
                     </span>
                   ))}
@@ -148,10 +146,7 @@ export const IndexMemoryViewer: React.FC<IndexMemoryViewerProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {Array.from(runtimeMap.entries()).map(([nodeId, state]) => (
-              <div
-                key={nodeId}
-                className="bg-neutral-950 p-3 rounded-lg border border-neutral-800"
-              >
+              <div key={nodeId} className="bg-neutral-950 p-3 rounded-lg border border-neutral-800">
                 <div className="flex items-center justify-between text-neutral-400 mb-1">
                   <span className="text-neutral-200 font-bold">{nodeId}</span>
                   <span className="text-[10px] text-neutral-500">v{state.version}</span>

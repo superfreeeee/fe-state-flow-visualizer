@@ -19,7 +19,7 @@ import { ImportExportModal } from './components/ImportExportModal';
 import { PanelRightOpen } from 'lucide-react';
 
 import {
-  selectedPresetAtom,
+  // selectedPresetAtom,
   activeTabAtom,
   layoutDirectionAtom,
   searchTermAtom,
@@ -33,11 +33,14 @@ import {
   resetFiltersActionAtom,
   isInspectorOpenAtom,
   inspectorTabAtom,
+  selectedGraphAtom,
+  selectGraphAtom,
 } from './store/atoms';
+import { allGraphs } from './store/graphs';
 
 export default function App() {
   // Global Jotai State
-  const selectedPreset = useAtomValue(selectedPresetAtom);
+  // const selectedPreset = useAtomValue(selectedPresetAtom);
   const activeTab = useAtomValue(activeTabAtom);
   const direction = useAtomValue(layoutDirectionAtom);
   const searchTerm = useAtomValue(searchTermAtom);
@@ -54,38 +57,42 @@ export default function App() {
 
   // Runtime engine states
   const [runtimeStore] = useState(() => new RuntimeStore());
-  const [runtimeStates, setRuntimeStates] = useState<Map<NodeId, RuntimeState>>(
-    () => new Map()
-  );
+  const [runtimeStates, setRuntimeStates] = useState<Map<NodeId, RuntimeState>>(() => new Map());
   const [events, setEvents] = useState<RuntimeEvent[]>([]);
 
   // 1. Build and populate graph whenever preset changes
-  const graph = useMemo(() => {
-    const g = new Graph();
-    const adapter = new EffectorAdapter();
-    adapter.extract({ definitions: selectedPreset.definitions }, g.builder);
-    return g;
-  }, [selectedPreset]);
+  // const graph = useMemo(() => {
+  //   const g = new Graph();
+  //   const adapter = new EffectorAdapter();
+  //   adapter.extract({ definitions: selectedPreset.definitions }, g.builder);
+  //   return g;
+  // }, [selectedPreset]);
+
+  const selectedGraph = useAtomValue(selectedGraphAtom);
+  const selectGraph = useSetAtom(selectGraphAtom);
+  useEffect(() => {
+    selectGraph(allGraphs[0]?.[0]);
+  }, [selectGraph]);
 
   // 2. Initialize runtime values from preset
-  useEffect(() => {
-    runtimeStore.resetStates();
-    for (const [key, val] of Object.entries(selectedPreset.initialValues)) {
-      const matching = graph
-        .getAllNodes()
-        .find(
-          (n) =>
-            n.id.includes(key) ||
-            n.name.toLowerCase().includes(key.replace('_', ''))
-        );
-      if (matching) {
-        runtimeStore.set(matching.id, val, 'update');
-      }
-    }
-    setRuntimeStates(runtimeStore.getAll());
-    setEvents(runtimeStore.getEvents());
-    clearSelection();
-  }, [graph, selectedPreset, runtimeStore, clearSelection]);
+  // useEffect(() => {
+  //   runtimeStore.resetStates();
+  //   for (const [key, val] of Object.entries(selectedPreset.initialValues)) {
+  //     const matching = graph
+  //       .getAllNodes()
+  //       .find(
+  //         (n) =>
+  //           n.id.includes(key) ||
+  //           n.name.toLowerCase().includes(key.replace('_', ''))
+  //       );
+  //     if (matching) {
+  //       runtimeStore.set(matching.id, val, 'update');
+  //     }
+  //   }
+  //   setRuntimeStates(runtimeStore.getAll());
+  //   setEvents(runtimeStore.getEvents());
+  //   clearSelection();
+  // }, [graph, selectedPreset, runtimeStore, clearSelection]);
 
   // Subscribe to RuntimeStore events
   useEffect(() => {
@@ -97,13 +104,16 @@ export default function App() {
   }, [runtimeStore]);
 
   // 1. Full Graph Nodes and Edges
-  const allNodes = useMemo(() => graph.getAllNodes(), [graph]);
-  const allEdges = useMemo(() => graph.getAllEdges(), [graph]);
+  const allNodes = useMemo(() => selectedGraph?.getAllNodes() || [], [selectedGraph]);
+  const allEdges = useMemo(() => selectedGraph?.getAllEdges() || [], [selectedGraph]);
 
   // 2. Compute Layout using HierarchicalLayout (Sugiyama algorithm)
   // STABILITY FIX: Layout is computed on all nodes and edges for the scenario & direction.
   // Switching selectedNodeId or changing upstream/downstream does NOT recompute or move layout!
   const layoutResult = useMemo(() => {
+    if (!allNodes || !allEdges) {
+      return null;
+    }
     return HierarchicalLayout.layout(allNodes, allEdges, {
       direction,
       nodeWidth: 210,
@@ -134,18 +144,13 @@ export default function App() {
     });
   }, [allNodes, searchTerm, selectedKinds]);
 
-  const visibleNodeIds = useMemo(
-    () => new Set(visibleNodes.map((n) => n.id)),
-    [visibleNodes]
-  );
+  const visibleNodeIds = useMemo(() => new Set(visibleNodes?.map((n) => n.id)), [visibleNodes]);
 
   const visibleEdges = useMemo(() => {
     if (visibleNodes.length === allNodes.length) {
       return allEdges;
     }
-    return allEdges.filter(
-      (e) => visibleNodeIds.has(e.source) && visibleNodeIds.has(e.target)
-    );
+    return allEdges.filter((e) => visibleNodeIds.has(e.source) && visibleNodeIds.has(e.target));
   }, [allEdges, visibleNodes.length, allNodes.length, visibleNodeIds]);
 
   // 4. Focus Path: Upstream, Downstream, and Path Edge Sets for highlighting
@@ -159,17 +164,17 @@ export default function App() {
       };
     }
 
-    const upView = graph.query({
+    const upView = selectedGraph?.query({
       root: selectedNodeId,
       direction: 'upstream',
     });
-    const downView = graph.query({
+    const downView = selectedGraph?.query({
       root: selectedNodeId,
       direction: 'downstream',
     });
 
-    const up = new Set(Array.from(upView.nodes()).map((n: GraphNode) => n.id));
-    const down = new Set(Array.from(downView.nodes()).map((n: GraphNode) => n.id));
+    const up = new Set(Array.from(upView?.nodes() || []).map((n: GraphNode) => n.id));
+    const down = new Set(Array.from(downView?.nodes() || []).map((n: GraphNode) => n.id));
     up.delete(selectedNodeId);
     down.delete(selectedNodeId);
 
@@ -180,16 +185,16 @@ export default function App() {
 
     if (queryDirection === 'upstream') {
       for (const id of up) pathNodes.add(id);
-      for (const edge of upView.edges()) pathEdges.add(edge.id);
+      for (const edge of upView?.edges() || []) pathEdges.add(edge.id);
     } else if (queryDirection === 'downstream') {
       for (const id of down) pathNodes.add(id);
-      for (const edge of downView.edges()) pathEdges.add(edge.id);
+      for (const edge of downView?.edges() || []) pathEdges.add(edge.id);
     } else {
       // 'both'
       for (const id of up) pathNodes.add(id);
       for (const id of down) pathNodes.add(id);
-      for (const edge of upView.edges()) pathEdges.add(edge.id);
-      for (const edge of downView.edges()) pathEdges.add(edge.id);
+      for (const edge of upView?.edges() || []) pathEdges.add(edge.id);
+      for (const edge of downView?.edges() || []) pathEdges.add(edge.id);
     }
 
     return {
@@ -198,21 +203,22 @@ export default function App() {
       focusedPathNodeIds: pathNodes,
       focusedPathEdgeIds: pathEdges,
     };
-  }, [graph, selectedNodeId, queryDirection]);
+  }, [selectedGraph, selectedNodeId, queryDirection]);
 
   // Parents and Children of selected node (for inspector)
-  const selectedNode = selectedNodeId ? graph.getNode(selectedNodeId) || null : null;
-  const selectedEdge = selectedEdgeId ? graph.getEdge(selectedEdgeId) || null : null;
-  const selectedParents = selectedNodeId ? graph.getParents(selectedNodeId) : [];
-  const selectedChildren = selectedNodeId ? graph.getChildren(selectedNodeId) : [];
+  const selectedNode = selectedNodeId ? selectedGraph?.getNode(selectedNodeId) || null : null;
+  const selectedEdge = selectedEdgeId ? selectedGraph?.getEdge(selectedEdgeId) || null : null;
+  const selectedParents = selectedNodeId ? selectedGraph?.getParents(selectedNodeId) || [] : [];
+  const selectedChildren = selectedNodeId ? selectedGraph?.getChildren(selectedNodeId) || [] : [];
 
   // Simulation execution handler
   const handleTriggerPresetEvent = useCallback(
     (eventDef: PresetScenario['triggerableEvents'][0]) => {
+      if (!selectedGraph) return;
       if (isSimulating) return;
       setIsSimulating(true);
 
-      const targetEventNode = graph.getNode(eventDef.id);
+      const targetEventNode = selectedGraph.getNode(eventDef.id);
       if (!targetEventNode) {
         setIsSimulating(false);
         return;
@@ -224,7 +230,7 @@ export default function App() {
       });
 
       // Find outgoing edges to pulse
-      const outEdges = graph.getOutgoingEdges(targetEventNode.id);
+      const outEdges = selectedGraph.getOutgoingEdges(targetEventNode.id);
       if (outEdges.length > 0) {
         setActivePulseEdgeId(outEdges[0].id);
       }
@@ -232,67 +238,63 @@ export default function App() {
       // Step 2: Propagate downstream updates after short step delay
       setTimeout(() => {
         if (eventDef.id === 'ev_add_item') {
-          const cartStore = graph.getNode('store_cart_items');
+          const cartStore = selectedGraph.getNode('store_cart_items');
           if (cartStore) {
             const current = (runtimeStore.get(cartStore.id)?.value as number) || 2;
             runtimeStore.set(cartStore.id, current + 1, 'update');
           }
 
-          const totalStore = graph.getNode('derived_total_amount');
+          const totalStore = selectedGraph.getNode('derived_total_amount');
           if (totalStore) {
             runtimeStore.set(totalStore.id, '$506.00', 'compute');
           }
 
-          const discountStore = graph.getNode('derived_discounted_price');
+          const discountStore = selectedGraph.getNode('derived_discounted_price');
           if (discountStore) {
             runtimeStore.set(discountStore.id, '$404.80', 'compute');
           }
         } else if (eventDef.id === 'ev_apply_coupon') {
-          const fxNode = graph.getNode('fx_validate_coupon');
+          const fxNode = selectedGraph.getNode('fx_validate_coupon');
           if (fxNode) {
             runtimeStore.set(fxNode.id, { valid: true, discountRate: 0.3 }, 'effect_done');
           }
-          const couponStore = graph.getNode('store_coupon_code');
+          const couponStore = selectedGraph.getNode('store_coupon_code');
           if (couponStore) {
             runtimeStore.set(couponStore.id, 'BLACKFRIDAY30', 'update');
           }
-          const discountStore = graph.getNode('derived_discounted_price');
+          const discountStore = selectedGraph.getNode('derived_discounted_price');
           if (discountStore) {
             runtimeStore.set(discountStore.id, '$214.90', 'compute');
           }
         } else if (eventDef.id === 'ev_checkout_click') {
-          const fxSubmit = graph.getNode('fx_submit_order');
+          const fxSubmit = selectedGraph.getNode('fx_submit_order');
           if (fxSubmit) {
-            runtimeStore.set(
-              fxSubmit.id,
-              { orderId: 'ORD-98241', status: 'PAID' },
-              'effect_done'
-            );
+            runtimeStore.set(fxSubmit.id, { orderId: 'ORD-98241', status: 'PAID' }, 'effect_done');
           }
         } else if (eventDef.id === 'action_increment') {
-          const countAtom = graph.getNode('atom_count');
+          const countAtom = selectedGraph.getNode('atom_count');
           if (countAtom) {
             const cur = (runtimeStore.get(countAtom.id)?.value as number) || 10;
             runtimeStore.set(countAtom.id, cur + 1, 'update');
 
-            const totalAtom = graph.getNode('atom_computed_total');
+            const totalAtom = selectedGraph.getNode('atom_computed_total');
             if (totalAtom) {
               runtimeStore.set(totalAtom.id, (cur + 1) * 3, 'compute');
             }
           }
         } else if (eventDef.id === 'ev_login_submit') {
-          const tokenStore = graph.getNode('store_auth_token');
+          const tokenStore = selectedGraph.getNode('store_auth_token');
           if (tokenStore) {
             runtimeStore.set(tokenStore.id, 'jwt_live_session_9921', 'update');
           }
-          const userStore = graph.getNode('store_user_profile');
+          const userStore = selectedGraph.getNode('store_user_profile');
           if (userStore) {
             runtimeStore.set(userStore.id, { name: 'Alex Rivera (Verified)', role: 'Admin' }, 'update');
           }
         } else if (eventDef.id === 'ev_logout_click') {
-          const tokenStore = graph.getNode('store_auth_token');
+          const tokenStore = selectedGraph.getNode('store_auth_token');
           if (tokenStore) runtimeStore.set(tokenStore.id, null, 'update');
-          const userStore = graph.getNode('store_user_profile');
+          const userStore = selectedGraph.getNode('store_user_profile');
           if (userStore) runtimeStore.set(userStore.id, null, 'update');
         }
 
@@ -300,15 +302,16 @@ export default function App() {
         setIsSimulating(false);
       }, 700);
     },
-    [isSimulating, graph, runtimeStore, setActivePulseEdgeId, setIsSimulating]
+    [isSimulating, selectedGraph, runtimeStore, setActivePulseEdgeId, setIsSimulating],
   );
 
   // Import JSON handler
   const handleImportJSON = (jsonString: string): boolean => {
+    if (!selectedGraph) return false;
     try {
       const data = JSON.parse(jsonString);
       if (Array.isArray(data.nodes) && Array.isArray(data.edges)) {
-        graph.importJSON(data);
+        selectedGraph.importJSON(data);
         resetFilters();
         return true;
       }
@@ -324,10 +327,7 @@ export default function App() {
       className="flex flex-col h-screen w-screen bg-neutral-950 text-neutral-100 overflow-hidden font-sans antialiased"
     >
       {/* 1. Header Navigation Bar */}
-      <Header
-        nodeCount={graph.nodeCount}
-        edgeCount={graph.edgeCount}
-      />
+      <Header nodeCount={selectedGraph?.nodeCount || 0} edgeCount={selectedGraph?.edgeCount || 0} />
 
       {/* 2. Main Content Body according to activeTab */}
       {activeTab === 'graph' && (
@@ -336,7 +336,7 @@ export default function App() {
           <QueryToolbar
             selectedNodeName={selectedNode?.name}
             visibleCount={selectedNodeId ? focusedPathNodeIds.size : visibleNodes.length}
-            totalCount={graph.nodeCount}
+            totalCount={selectedGraph?.nodeCount || 0}
           />
 
           {/* Canvas + Inspector Split View */}
@@ -381,30 +381,27 @@ export default function App() {
               runtimeStates={runtimeStates}
               events={events}
               onTriggerEvent={(nodeId) => {
-                const triggerable = selectedPreset.triggerableEvents.find(
-                  (t) => t.id === nodeId
-                );
-                if (triggerable) {
-                  handleTriggerPresetEvent(triggerable);
-                } else {
-                  runtimeStore.triggerEvent(nodeId, { clickedAt: Date.now() });
-                }
+                // const triggerable = selectedPreset.triggerableEvents.find((t) => t.id === nodeId);
+                // if (triggerable) {
+                //   handleTriggerPresetEvent(triggerable);
+                // } else {
+                //   runtimeStore.triggerEvent(nodeId, { clickedAt: Date.now() });
+                // }
+                runtimeStore.triggerEvent(nodeId, { clickedAt: Date.now() });
               }}
               onTriggerPresetEvent={handleTriggerPresetEvent}
               onResetStates={() => {
                 runtimeStore.resetStates();
-                for (const [key, val] of Object.entries(selectedPreset.initialValues)) {
-                  const matching = graph
-                    .getAllNodes()
-                    .find((n) => n.id.includes(key));
-                  if (matching) runtimeStore.set(matching.id, val, 'update');
-                }
+                // for (const [key, val] of Object.entries(selectedPreset.initialValues)) {
+                //   const matching = graph.getAllNodes().find((n) => n.id.includes(key));
+                //   if (matching) runtimeStore.set(matching.id, val, 'update');
+                // }
                 setRuntimeStates(new Map(runtimeStore.getAll()));
               }}
               isSimulating={isSimulating}
-              allNodes={graph.getAllNodes()}
-              allEdges={graph.getAllEdges()}
-              scenario={selectedPreset}
+              allNodes={selectedGraph?.getAllNodes() || []}
+              allEdges={selectedGraph?.getAllEdges() || []}
+              // scenario={selectedPreset}
             />
           </div>
         </div>
@@ -412,23 +409,14 @@ export default function App() {
 
       {activeTab === 'architecture' && <ArchitectureDoc />}
 
-      {activeTab === 'index' && (
-        <IndexMemoryViewer graph={graph} runtimeStore={runtimeStore} />
-      )}
+      {activeTab === 'index' && <IndexMemoryViewer graph={selectedGraph} runtimeStore={runtimeStore} />}
 
       {activeTab === 'timeline' && (
-        <EventTimelineViewer
-          events={events}
-          graph={graph}
-          onClear={() => runtimeStore.clearEvents()}
-        />
+        <EventTimelineViewer events={events} graph={selectedGraph} onClear={() => runtimeStore.clearEvents()} />
       )}
 
       {/* JSON Import/Export Modal */}
-      <ImportExportModal
-        graph={graph}
-        onImport={handleImportJSON}
-      />
+      <ImportExportModal graph={selectedGraph} onImport={handleImportJSON} />
     </div>
   );
 }

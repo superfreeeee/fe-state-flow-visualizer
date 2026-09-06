@@ -1,26 +1,24 @@
-import {
-  GraphNode,
-  GraphEdge,
-  GraphGroup,
-  NodeId,
-  EdgeId,
-  GroupId,
-} from '../types/graph';
+import { GraphNode, GraphEdge, GraphGroup, NodeId, EdgeId, GroupId } from '../types/graph';
 import { GraphQuery, GraphView } from '../types/query';
 import { GraphIndex } from './GraphIndex';
 import { GraphBuilder } from './GraphBuilder';
 import { LazyGraphView } from '../query/QueryEngine';
+
+let graphId = 0;
+const nextGraphId = () => `graph-${graphId++}`;
 
 /**
  * Primary Graph Store representing the authoritative state topological graph.
  * Manages indexed nodes, edges, groups, and traversal queries.
  */
 export class Graph {
+  id: string;
   private index = new GraphIndex();
   private groups = new Map<GroupId, GraphGroup>();
   public readonly builder: GraphBuilder;
 
-  constructor() {
+  constructor(id?: string) {
+    this.id = id || nextGraphId();
     this.builder = new GraphBuilder(this);
   }
 
@@ -53,7 +51,7 @@ export class Graph {
   public addEdge(edge: GraphEdge): void {
     if (!this.hasNode(edge.source) || !this.hasNode(edge.target)) {
       throw new Error(
-        `Cannot add edge "${edge.id}": Source "${edge.source}" or target "${edge.target}" does not exist.`
+        `Cannot add edge "${edge.id}": Source "${edge.source}" or target "${edge.target}" does not exist.`,
       );
     }
     this.index.addEdge(edge);
@@ -163,11 +161,7 @@ export class Graph {
     };
   }
 
-  public importJSON(data: {
-    nodes: GraphNode[];
-    edges: GraphEdge[];
-    groups?: GraphGroup[];
-  }): void {
+  public importJSON(data: { nodes: GraphNode[]; edges: GraphEdge[]; groups?: GraphGroup[] }): void {
     this.clear();
     if (data.groups) {
       for (const g of data.groups) {

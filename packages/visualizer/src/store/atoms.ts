@@ -1,12 +1,26 @@
 import { atom } from 'jotai';
 import { PRESET_SCENARIOS, PresetScenario } from '../core/adapters/presetModels';
-import { NodeKind, NodeId, EdgeId, QueryDirection } from '@state-flow/common';
+import { NodeKind, NodeId, EdgeId, QueryDirection, Graph } from '@state-flow/common';
+import { graphsMap } from './graphs';
 
 export type ActiveTab = 'graph' | 'architecture' | 'index' | 'timeline';
 export type InspectorTab = 'overview' | 'detail' | 'runtime';
 
+export const selectedGraphAtom = atom<Graph | null>(null);
+export const selectGraphAtom = atom(null, (get, set, graphId: string) => {
+  const graphJson = graphsMap[graphId];
+  if (!graphJson) {
+    set(selectedGraphAtom, null);
+    return;
+  }
+
+  const g = new Graph(graphId);
+  g.builder.load(graphJson);
+  set(selectedGraphAtom, g);
+});
+
 // 1. Core Navigation & Scenario Atoms
-export const selectedPresetAtom = atom(PRESET_SCENARIOS[0] as PresetScenario);
+// export const selectedPresetAtom = atom(PRESET_SCENARIOS[0] as PresetScenario);
 export const activeTabAtom = atom('graph' as ActiveTab);
 export const layoutDirectionAtom = atom('TB' as 'TB' | 'LR');
 

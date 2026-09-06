@@ -45,7 +45,6 @@ interface NodeInspectorProps {
   isSimulating?: boolean;
   allNodes: GraphNode[];
   allEdges: GraphEdge[];
-  scenario: PresetScenario;
 }
 
 export const NodeInspector: React.FC<NodeInspectorProps> = ({
@@ -67,7 +66,6 @@ export const NodeInspector: React.FC<NodeInspectorProps> = ({
   isSimulating = false,
   allNodes,
   allEdges,
-  scenario,
 }) => {
   const defaultSelectNode = useSetAtom(selectNodeActionAtom);
   const defaultClose = useSetAtom(clearSelectionActionAtom);
@@ -198,7 +196,7 @@ export const NodeInspector: React.FC<NodeInspectorProps> = ({
         {activeTab === 'overview' && (
           <div className="flex flex-col gap-4">
             {/* Scenario Header */}
-            <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800">
+            {/* <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
                   {scenario.framework}
@@ -211,7 +209,7 @@ export const NodeInspector: React.FC<NodeInspectorProps> = ({
               <p className="text-[11px] text-neutral-400 mt-1 leading-relaxed">
                 {scenario.description}
               </p>
-            </div>
+            </div> */}
 
             {/* Topology Metrics */}
             <div>
@@ -530,7 +528,7 @@ export const NodeInspector: React.FC<NodeInspectorProps> = ({
                 )}
               </div>
 
-              <div className="flex flex-col gap-1.5">
+              {/* <div className="flex flex-col gap-1.5">
                 {scenario.triggerableEvents.map((evt) => (
                   <button
                     key={evt.id}
@@ -550,7 +548,7 @@ export const NodeInspector: React.FC<NodeInspectorProps> = ({
                     </div>
                   </button>
                 ))}
-              </div>
+              </div> */}
             </div>
 
             {/* Live Runtime Store Values */}

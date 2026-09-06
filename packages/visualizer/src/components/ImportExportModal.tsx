@@ -57,7 +57,7 @@ const ImportExportModalLayout = ({
 };
 
 interface ImportExportModalProps {
-  graph: Graph;
+  graph: Graph | null;
   onImport: (json: string) => boolean;
 }
 
@@ -67,7 +67,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({ graph, onI
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  if (!modalState.isOpen) return null;
+  if (!modalState.isOpen || !graph) return null;
   const { mode } = modalState;
   const onClose = () => {
     setError(null);

@@ -1,17 +1,14 @@
 import React from 'react';
-import { useAtom } from 'jotai';
-import {
-  Layers,
-  Cpu,
-  Database,
-  Activity,
-  Share2,
-} from 'lucide-react';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { Layers, Cpu, Database, Activity, Share2 } from 'lucide-react';
 import { PRESET_SCENARIOS } from '../core/adapters/presetModels';
 import {
-  selectedPresetAtom,
+  // selectedPresetAtom,
   activeTabAtom,
+  selectedGraphAtom,
+  selectGraphAtom,
 } from '../store/atoms';
+import { allGraphs } from '@/store/graphs';
 
 export type { ActiveTab } from '../store/atoms';
 
@@ -21,7 +18,9 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ nodeCount, edgeCount }) => {
-  const [selectedPreset, setSelectedPreset] = useAtom(selectedPresetAtom);
+  // const [selectedPreset, setSelectedPreset] = useAtom(selectedPresetAtom);
+  const selectedGraph = useAtomValue(selectedGraphAtom);
+  const selectGraph = useSetAtom(selectGraphAtom);
   const [activeTab, setActiveTab] = useAtom(activeTabAtom);
 
   return (
@@ -50,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({ nodeCount, edgeCount }) => {
           <label htmlFor="preset-select" className="text-xs text-neutral-400 font-medium hidden sm:inline">
             Scenario:
           </label>
-          <select
+          {/* <select
             id="preset-select"
             value={selectedPreset.id}
             onChange={(e) => {
@@ -62,6 +61,20 @@ export const Header: React.FC<HeaderProps> = ({ nodeCount, edgeCount }) => {
             {PRESET_SCENARIOS.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.title}
+              </option>
+            ))}
+          </select> */}
+          <select
+            id="preset-select"
+            value={selectedGraph?.id}
+            onChange={(e) => {
+              selectGraph(e.target.value);
+            }}
+            className="bg-neutral-950 text-neutral-200 text-xs font-medium rounded-md px-2.5 py-1.5 border border-neutral-700 focus:outline-none focus:border-emerald-500 cursor-pointer shadow-xs"
+          >
+            {allGraphs.map(([graphId]) => (
+              <option key={graphId} value={graphId}>
+                {graphId}
               </option>
             ))}
           </select>

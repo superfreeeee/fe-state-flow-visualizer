@@ -5,6 +5,8 @@ import {
   NodeId,
   EdgeId,
   GroupId,
+  GraphNode,
+  GraphEdge,
 } from '../types/graph';
 import type { Graph } from './Graph';
 
@@ -61,6 +63,15 @@ export class GraphBuilder {
           ...metadata,
         },
       });
+    }
+  }
+
+  load(graphLike: { nodes: GraphNode[]; edges: GraphEdge[] }) {
+    for (const node of graphLike.nodes) {
+      this.addNode(node);
+    }
+    for (const edge of graphLike.edges) {
+      this.addEdge(edge);
     }
   }
 }

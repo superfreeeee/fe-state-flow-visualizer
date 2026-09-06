@@ -7,15 +7,14 @@ import { selectNodeActionAtom, activeTabAtom } from '../../store/atoms';
 
 interface EventTimelineViewerProps {
   events: RuntimeEvent[];
-  graph: Graph;
+  graph: Graph | null;
   onClear: () => void;
 }
 
-export const EventTimelineViewer: React.FC<EventTimelineViewerProps> = ({
-  events,
-  graph,
-  onClear,
-}) => {
+export const EventTimelineViewer: React.FC<EventTimelineViewerProps> = ({ events, graph, onClear }) => {
+  if (!graph) {
+    return <div>no graph</div>;
+  }
   const selectNode = useSetAtom(selectNodeActionAtom);
   const setActiveTab = useSetAtom(activeTabAtom);
   return (
@@ -30,15 +29,11 @@ export const EventTimelineViewer: React.FC<EventTimelineViewerProps> = ({
               <Activity className="w-5 h-5 text-amber-400" />
               <span>Runtime Event Stream & Trace (Phase 2 运行时流)</span>
             </h2>
-            <p className="text-neutral-400 text-xs mt-1">
-              追踪记录响应式拓扑中触发的每一个微任务与状态更新事件序列。
-            </p>
+            <p className="text-neutral-400 text-xs mt-1">追踪记录响应式拓扑中触发的每一个微任务与状态更新事件序列。</p>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="font-mono text-neutral-400 text-[11px]">
-              {events.length} events logged
-            </span>
+            <span className="font-mono text-neutral-400 text-[11px]">{events.length} events logged</span>
             {events.length > 0 && (
               <button
                 onClick={onClear}
@@ -54,11 +49,10 @@ export const EventTimelineViewer: React.FC<EventTimelineViewerProps> = ({
         {events.length === 0 ? (
           <div className="p-12 text-center border border-dashed border-neutral-800 rounded-xl">
             <Clock className="w-8 h-8 text-neutral-600 mx-auto mb-3" />
-            <h3 className="text-sm font-semibold text-neutral-300 mb-1">
-              No Runtime Events Recorded Yet
-            </h3>
+            <h3 className="text-sm font-semibold text-neutral-300 mb-1">No Runtime Events Recorded Yet</h3>
             <p className="text-neutral-500 text-xs max-w-sm mx-auto">
-              Switch back to the DAG Visualizer and click on any event trigger button in the bottom simulator bar to observe real-time event propagation.
+              Switch back to the DAG Visualizer and click on any event trigger button in the bottom simulator bar to
+              observe real-time event propagation.
             </p>
           </div>
         ) : (
@@ -78,12 +72,8 @@ export const EventTimelineViewer: React.FC<EventTimelineViewerProps> = ({
                   className="bg-neutral-900 border border-neutral-800 rounded-lg p-3 hover:border-neutral-700 transition flex flex-col md:flex-row md:items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-neutral-600 text-[10px] w-6 text-right">
-                      #{events.length - idx}
-                    </span>
-                    <span
-                      className={`px-2 py-0.5 rounded border text-[10px] uppercase font-bold ${badgeColor}`}
-                    >
+                    <span className="text-neutral-600 text-[10px] w-6 text-right">#{events.length - idx}</span>
+                    <span className={`px-2 py-0.5 rounded border text-[10px] uppercase font-bold ${badgeColor}`}>
                       {evt.type}
                     </span>
                     <button
@@ -102,9 +92,7 @@ export const EventTimelineViewer: React.FC<EventTimelineViewerProps> = ({
                   <div className="flex items-center gap-3">
                     {evt.value !== undefined && (
                       <span className="text-[11px] text-emerald-300 bg-neutral-950 px-2 py-1 rounded border border-neutral-800 max-w-xs truncate">
-                        {typeof evt.value === 'object'
-                          ? JSON.stringify(evt.value)
-                          : String(evt.value)}
+                        {typeof evt.value === 'object' ? JSON.stringify(evt.value) : String(evt.value)}
                       </span>
                     )}
                     <span className="text-[10px] text-neutral-500 font-sans">{dateStr}</span>

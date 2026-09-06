@@ -23,6 +23,7 @@ import {
   toggleKindActionAtom,
   resetFiltersActionAtom,
   clearSelectionActionAtom,
+  selectedGraphAtom,
 } from '../../store/atoms';
 
 interface QueryToolbarProps {
@@ -50,6 +51,7 @@ export const QueryToolbar: React.FC<QueryToolbarProps> = ({ selectedNodeName, vi
   const clearSelection = useSetAtom(clearSelectionActionAtom);
   const [layoutDirection, setLayoutDirection] = useAtom(layoutDirectionAtom);
   const setModalState = useSetAtom(modalStateAtom);
+  const selectedGraph = useAtomValue(selectedGraphAtom);
 
   return (
     <div
@@ -207,6 +209,7 @@ export const QueryToolbar: React.FC<QueryToolbarProps> = ({ selectedNodeName, vi
           <button
             id="btn-export-json"
             title="下载 / 导出 Graph JSON"
+            disabled={!selectedGraph}
             onClick={() => setModalState({ isOpen: true, mode: 'export' })}
             className="p-1 text-neutral-300 hover:text-neutral-100 hover:bg-neutral-800 rounded transition cursor-pointer"
           >
@@ -216,6 +219,7 @@ export const QueryToolbar: React.FC<QueryToolbarProps> = ({ selectedNodeName, vi
           <button
             id="btn-import-json"
             title="上传 / 导入 Graph JSON"
+            disabled={!selectedGraph}
             onClick={() => setModalState({ isOpen: true, mode: 'import' })}
             className="p-1 text-neutral-300 hover:text-neutral-100 hover:bg-neutral-800 rounded transition cursor-pointer"
           >

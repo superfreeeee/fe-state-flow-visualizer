@@ -20,7 +20,7 @@ import { QueryDirection } from '@state-flow/common';
 interface GraphCanvasProps {
   nodes: GraphNode[];
   edges: GraphEdge[];
-  layout: LayoutResult;
+  layout: LayoutResult | null;
   selectedNodeId?: NodeId | null;
   selectedEdgeId?: EdgeId | null;
   upstreamNodeIds: Set<NodeId>;
@@ -522,7 +522,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
       y: dimensions.height / 2 - centerY * nextScale,
       scale: nextScale,
     });
-  }, [dimensions, layout.bounds]);
+  }, [dimensions, layout?.bounds]);
 
   // Run initial fit view when layout bounds change significantly
   useEffect(() => {
@@ -660,7 +660,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
           {/* 1. EDGES LAYER */}
           <g id="canvas-edges-layer">
             {edges.map((edge) => {
-              const layoutEdge = layout.edges.get(edge.id);
+              const layoutEdge = layout?.edges.get(edge.id);
               if (!layoutEdge || layoutEdge.points.length < 2) return null;
               const isFocusMode = effectiveSelectedNodeId !== null;
               const isPathEdge = focusedPathEdgeIds ? focusedPathEdgeIds.has(edge.id) : true;
@@ -685,7 +685,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
           {/* 2. NODES LAYER */}
           <g id="canvas-nodes-layer">
             {nodes.map((node) => {
-              const layoutNode = layout.nodes.get(node.id) as LayoutNode | undefined;
+              const layoutNode = layout?.nodes.get(node.id);
               if (!layoutNode) return null;
               const runtimeState = runtimeStates.get(node.id);
               const isFocusMode = effectiveSelectedNodeId !== null;

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { Graph } from './core/graph/Graph';
+import { Graph } from '@state-flow/common';
 import { EffectorAdapter } from './core/adapters/EffectorAdapter';
 import { PresetScenario } from './core/adapters/presetModels';
 import { HierarchicalLayout } from './core/layout/HierarchicalLayout';
 import { RuntimeStore } from './core/runtime/RuntimeStore';
-import { NodeId, EdgeId, GraphNode } from './types/graph';
+import { NodeId, EdgeId, GraphNode } from '@state-flow/common';
 import { RuntimeState, RuntimeEvent } from './types/runtime';
 
 import { Header } from './components/Header';

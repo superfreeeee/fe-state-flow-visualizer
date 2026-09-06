@@ -1,6 +1,6 @@
 import React from 'react';
 import { Database, GitBranch, Terminal, RefreshCw } from 'lucide-react';
-import { Graph } from '../../core/graph/Graph';
+import { Graph } from '@state-flow/common';
 import { RuntimeStore } from '../../core/runtime/RuntimeStore';
 
 interface IndexMemoryViewerProps {

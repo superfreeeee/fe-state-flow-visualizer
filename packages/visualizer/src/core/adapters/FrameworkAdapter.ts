@@ -1,4 +1,4 @@
-import { GraphBuilder } from '../graph/GraphBuilder';
+import { GraphBuilder } from '@state-flow/common';
 
 export interface ExtractInput {
   name?: string;

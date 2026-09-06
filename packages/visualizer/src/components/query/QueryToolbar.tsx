@@ -12,7 +12,7 @@ import {
   Download,
   Upload,
 } from 'lucide-react';
-import { NodeKind } from '../../types/graph';
+import { NodeKind } from '@state-flow/common';
 import {
   searchTermAtom,
   selectedKindsAtom,

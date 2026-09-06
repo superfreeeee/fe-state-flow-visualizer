@@ -1,4 +1,4 @@
-import { NodeId } from './graph';
+import { NodeId } from '@state-flow/common';
 
 export type RuntimeEventType =
   | 'trigger'

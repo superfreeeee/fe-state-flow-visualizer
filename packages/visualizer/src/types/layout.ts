@@ -1,4 +1,4 @@
-import { NodeId, EdgeId } from './graph';
+import { NodeId, EdgeId } from '@state-flow/common';
 
 export interface LayoutNode {
   id: NodeId;

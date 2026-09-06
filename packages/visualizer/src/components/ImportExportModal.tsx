@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAtom } from 'jotai';
 import { X, Download, Upload, Check, AlertCircle } from 'lucide-react';
-import { Graph } from '../core/graph/Graph';
+import { Graph } from '@state-flow/common';
 import { modalStateAtom } from '../store/atoms';
 
 const ImportExportModalLayout = ({

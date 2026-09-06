@@ -1,5 +1,5 @@
 import dagre from 'dagre';
-import { GraphNode, GraphEdge, NodeId, EdgeId } from '../../types/graph';
+import { GraphNode, GraphEdge, NodeId, EdgeId } from '@state-flow/common';
 import {
   LayoutNode,
   LayoutEdge,

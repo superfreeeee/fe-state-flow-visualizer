@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import * as d3 from 'd3';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useMemoizedFn } from 'ahooks';
-import { GraphNode, GraphEdge, NodeId, EdgeId, NodeKind, EdgeKind } from '../../types/graph';
+import { GraphNode, GraphEdge, NodeId, EdgeId, NodeKind, EdgeKind } from '@state-flow/common';
 import { LayoutResult, LayoutNode, LayoutPoint, LayoutEdge } from '../../types/layout';
 import { RuntimeState } from '../../types/runtime';
 import { CanvasControls } from './CanvasControls';

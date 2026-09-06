@@ -17,7 +17,7 @@ import {
   Search,
   PanelRightClose,
 } from 'lucide-react';
-import { GraphNode, GraphEdge, NodeId } from '../../types/graph';
+import { GraphNode, GraphEdge, NodeId } from '@state-flow/common';
 import { RuntimeState, RuntimeEvent } from '../../types/runtime';
 import { PresetScenario } from '../../core/adapters/presetModels';
 import {

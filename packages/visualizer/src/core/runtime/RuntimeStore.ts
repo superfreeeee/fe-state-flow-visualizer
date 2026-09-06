@@ -1,4 +1,4 @@
-import { NodeId } from '../../types/graph';
+import { NodeId } from '@state-flow/common';
 import {
   RuntimeState,
   RuntimeEvent,

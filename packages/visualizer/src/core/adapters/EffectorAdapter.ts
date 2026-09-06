@@ -1,6 +1,5 @@
+import { GraphBuilder, NodeKind, EdgeKind } from '@state-flow/common';
 import { FrameworkAdapter, ExtractInput } from './FrameworkAdapter';
-import { GraphBuilder } from '../graph/GraphBuilder';
-import { NodeKind, EdgeKind } from '../../types/graph';
 
 export interface EffectorEntityDef {
   id: string;
@@ -92,10 +91,10 @@ export class EffectorAdapter implements FrameworkAdapter {
             (def.kind === 'event'
               ? 'update'
               : def.kind === 'derived'
-              ? 'derive'
-              : def.kind === 'effect'
-              ? 'effect'
-              : 'dependency');
+                ? 'derive'
+                : def.kind === 'effect'
+                  ? 'effect'
+                  : 'dependency');
 
           builder.addEdge({
             source: def.id,
@@ -122,9 +121,7 @@ export class EffectorAdapter implements FrameworkAdapter {
   private generateSourceSnippet(def: EffectorEntityDef): string {
     switch (def.kind) {
       case 'store':
-        return `export const ${def.name} = createStore(${JSON.stringify(
-          def.initialValue ?? 0
-        )});`;
+        return `export const ${def.name} = createStore(${JSON.stringify(def.initialValue ?? 0)});`;
       case 'event':
         return `export const ${def.name} = createEvent<any>();`;
       case 'effect':

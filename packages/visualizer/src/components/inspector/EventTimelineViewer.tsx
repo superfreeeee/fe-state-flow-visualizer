@@ -2,7 +2,7 @@ import React from 'react';
 import { useSetAtom } from 'jotai';
 import { Activity, Clock, Zap, ArrowRight, Trash2 } from 'lucide-react';
 import { RuntimeEvent } from '../../types/runtime';
-import { Graph } from '../../core/graph/Graph';
+import { Graph } from '@state-flow/common';
 import { selectNodeActionAtom, activeTabAtom } from '../../store/atoms';
 
 interface EventTimelineViewerProps {

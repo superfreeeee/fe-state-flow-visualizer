@@ -11,9 +11,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  publicDir: path.resolve(__dirname, 'public'),
+  base: './',
   build: {
-    outDir: path.resolve(__dirname, '../../dist'),
+    outDir: path.resolve(__dirname, 'dist'),
     emptyOutDir: true,
   },
   server: {

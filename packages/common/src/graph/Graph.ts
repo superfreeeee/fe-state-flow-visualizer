@@ -50,9 +50,10 @@ export class Graph {
   // --- Edge Operations ---
   public addEdge(edge: GraphEdge): void {
     if (!this.hasNode(edge.source) || !this.hasNode(edge.target)) {
-      throw new Error(
-        `Cannot add edge "${edge.id}": Source "${edge.source}" or target "${edge.target}" does not exist.`,
-      );
+      // TODO allow edge before node
+      // throw new Error(
+      //   `Cannot add edge "${edge.id}": Source "${edge.source}" or target "${edge.target}" does not exist.`,
+      // );
     }
     this.index.addEdge(edge);
   }

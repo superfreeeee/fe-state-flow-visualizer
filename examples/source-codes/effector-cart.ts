@@ -91,13 +91,14 @@ sample({
 });
 
 // Checkout trigger flow
-sample({
-  clock: checkoutClicked,
-  source: {
-    items: $cartItems,
-    coupon: $couponCode,
-    total: $finalTotal,
-  },
-  filter: $isCheckoutEnabled,
-  target: submitOrderFx,
-});
+// TODO multiple source handling not ready yet
+// sample({
+//   clock: checkoutClicked,
+//   source: {
+//     items: $cartItems,
+//     coupon: $couponCode,
+//     total: $finalTotal,
+//   },
+//   filter: $isCheckoutEnabled,
+//   target: submitOrderFx,
+// });

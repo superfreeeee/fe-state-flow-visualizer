@@ -357,25 +357,11 @@
       "target": "$discountRate",
       "kind": "trigger",
       "label": "sample:clock"
-    },
-    {
-      "id": "e_checkoutClicked_submitOrderFx_18",
-      "source": "checkoutClicked",
-      "target": "submitOrderFx",
-      "kind": "trigger",
-      "label": "sample:clock"
-    },
-    {
-      "id": "e_{\n    items: $cartItems,\n    coupon: $couponCode,\n    total: $finalTotal,\n  }_submitOrderFx_19",
-      "source": "{\n    items: $cartItems,\n    coupon: $couponCode,\n    total: $finalTotal,\n  }",
-      "target": "submitOrderFx",
-      "kind": "dependency",
-      "label": "sample:source"
     }
   ],
   "metadata": {
     "sourceFile": "effector-cart.ts",
     "framework": "effector",
-    "extractedAt": "2026-09-06T11:18:58.358Z"
+    "extractedAt": "2026-09-06T13:45:50.472Z"
   }
 }

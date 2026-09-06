@@ -40,11 +40,7 @@ const ALL_KINDS: Array<{ kind: NodeKind; label: string; color: string }> = [
   { kind: 'component', label: 'Component', color: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40' },
 ];
 
-export const QueryToolbar: React.FC<QueryToolbarProps> = ({
-  selectedNodeName,
-  visibleCount,
-  totalCount,
-}) => {
+export const QueryToolbar: React.FC<QueryToolbarProps> = ({ selectedNodeName, visibleCount, totalCount }) => {
   const [searchTerm, setSearchTerm] = useAtom(searchTermAtom);
   const selectedKinds = useAtomValue(selectedKindsAtom);
   const toggleKind = useSetAtom(toggleKindActionAtom);
@@ -58,7 +54,7 @@ export const QueryToolbar: React.FC<QueryToolbarProps> = ({
   return (
     <div
       id="query-toolbar"
-      className="bg-neutral-900/95 backdrop-blur border-b border-neutral-800 px-4 py-2 flex items-center justify-between gap-3 text-xs overflow-x-auto select-none shrink-0"
+      className="h-10 bg-neutral-900/95 backdrop-blur border-b border-neutral-800 px-4 py-2 flex items-center justify-between gap-3 text-xs overflow-x-auto select-none shrink-0"
     >
       {/* Left: Search & Filter Kinds */}
       <div className="flex items-center gap-3 shrink-0">

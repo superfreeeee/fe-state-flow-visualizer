@@ -194,7 +194,6 @@ const RenderEdge = ({
 
   const MIN_WIDTH = 28;
   const labelWidth = edge.label?.length ? Math.max(MIN_WIDTH, edge.label?.length * 6) + 10 : MIN_WIDTH;
-  console.log({ len: edge.label?.length, labelWidth });
 
   return (
     <g

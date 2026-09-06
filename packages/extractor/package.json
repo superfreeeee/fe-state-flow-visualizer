@@ -1,0 +1,21 @@
+{
+  "name": "@state-flow/extractor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "extract": "tsx src/cli.ts",
+    "extract:all": "tsx src/cli.ts ../../examples/source-codes/effector-cart.ts -o ../../examples/graphs/effector-cart.json && tsx src/cli.ts ../../examples/source-codes/effector-counter.ts -o ../../examples/graphs/effector-counter.json && tsx src/cli.ts ../../examples/source-codes/effector-react-feed.tsx -o ../../examples/graphs/effector-react-feed.json",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@state-flow/common": "workspace:*",
+    "oxc-parser": "^0.148.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2"
+  }
+}

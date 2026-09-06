@@ -1,0 +1,160 @@
+{
+  "nodes": [
+    {
+      "id": "postLiked",
+      "kind": "event",
+      "name": "postLiked",
+      "framework": {
+        "name": "effector",
+        "type": "event"
+      },
+      "source": {
+        "file": "effector-react-feed.tsx",
+        "line": 13,
+        "column": 14,
+        "snippet": "postLiked = createEvent<string>('postLiked')"
+      }
+    },
+    {
+      "id": "fetchFeedTriggered",
+      "kind": "event",
+      "name": "fetchFeedTriggered",
+      "framework": {
+        "name": "effector",
+        "type": "event"
+      },
+      "source": {
+        "file": "effector-react-feed.tsx",
+        "line": 14,
+        "column": 14,
+        "snippet": "fetchFeedTriggered = createEvent<void>('fetchFeedTriggered')"
+      }
+    },
+    {
+      "id": "loadPostsFx",
+      "kind": "effect",
+      "name": "loadPostsFx",
+      "framework": {
+        "name": "effector",
+        "type": "effect"
+      },
+      "source": {
+        "file": "effector-react-feed.tsx",
+        "line": 16,
+        "column": 14,
+        "snippet": "loadPostsFx = createEffect<void, FeedPost[]>(async () => {\n  return [\n    { i..."
+      }
+    },
+    {
+      "id": "$posts",
+      "kind": "state",
+      "name": "$posts",
+      "framework": {
+        "name": "effector",
+        "type": "store"
+      },
+      "source": {
+        "file": "effector-react-feed.tsx",
+        "line": 23,
+        "column": 14,
+        "snippet": "$posts = createStore<FeedPost[]>([], { name: '$posts' })\n  .on(loadPostsFx.do..."
+      },
+      "metadata": {
+        "initialValue": []
+      }
+    },
+    {
+      "id": "$isLoading",
+      "kind": "derived",
+      "name": "$isLoading",
+      "framework": {
+        "name": "effector",
+        "type": "store"
+      },
+      "source": {
+        "file": "effector-react-feed.tsx",
+        "line": 29,
+        "column": 14,
+        "snippet": "$isLoading = loadPostsFx.pending"
+      }
+    },
+    {
+      "id": "SocialFeedView",
+      "kind": "component",
+      "name": "SocialFeedView",
+      "framework": {
+        "name": "react",
+        "type": "component"
+      },
+      "source": {
+        "file": "effector-react-feed.tsx",
+        "line": 38,
+        "column": 47,
+        "snippet": "useUnit({\n    posts: $posts,\n    loading: $isLoading,\n    onLike: postLiked,\n..."
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_loadPostsFx.doneData_$posts_1",
+      "source": "loadPostsFx.doneData",
+      "target": "$posts",
+      "kind": "update",
+      "label": "on"
+    },
+    {
+      "id": "e_postLiked_$posts_2",
+      "source": "postLiked",
+      "target": "$posts",
+      "kind": "update",
+      "label": "on"
+    },
+    {
+      "id": "e_loadPostsFx.pending_$isLoading_3",
+      "source": "loadPostsFx.pending",
+      "target": "$isLoading",
+      "kind": "derive",
+      "label": "derive"
+    },
+    {
+      "id": "e_fetchFeedTriggered_loadPostsFx_4",
+      "source": "fetchFeedTriggered",
+      "target": "loadPostsFx",
+      "kind": "trigger",
+      "label": "sample:clock"
+    },
+    {
+      "id": "e_$posts_SocialFeedView_5",
+      "source": "$posts",
+      "target": "SocialFeedView",
+      "kind": "render",
+      "label": "useUnit:posts"
+    },
+    {
+      "id": "e_$isLoading_SocialFeedView_6",
+      "source": "$isLoading",
+      "target": "SocialFeedView",
+      "kind": "render",
+      "label": "useUnit:loading"
+    },
+    {
+      "id": "e_SocialFeedView_postLiked_7",
+      "source": "SocialFeedView",
+      "target": "postLiked",
+      "kind": "trigger",
+      "label": "useUnit:onLike"
+    },
+    {
+      "id": "e_SocialFeedView_fetchFeedTriggered_8",
+      "source": "SocialFeedView",
+      "target": "fetchFeedTriggered",
+      "kind": "trigger",
+      "label": "useUnit:onFetch"
+    }
+  ],
+  "metadata": {
+    "sourceFile": "effector-react-feed.tsx",
+    "framework": "effector",
+    "extractedAt": "2026-09-06T11:19:02.742Z"
+  }
+}

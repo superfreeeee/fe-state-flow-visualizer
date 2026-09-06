@@ -1,43 +1,23 @@
 {
-  "name": "react-example",
+  "name": "@state-flow/monorepo",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build",
-    "preview": "vite preview",
-    "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@google/genai": "^2.4.0",
-    "@tailwindcss/vite": "^4.1.14",
-    "@types/d3": "^7.4.3",
-    "@vitejs/plugin-react": "^5.0.4",
-    "ahooks": "^3.9.7",
-    "d3": "^7.9.0",
-    "dagre": "^0.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^4.21.2",
-    "jotai": "^2.20.3",
-    "lucide-react": "^0.546.0",
-    "motion": "^12.23.24",
-    "react": "^19.0.1",
-    "react-dom": "^19.0.1",
-    "vite": "^6.2.3"
+    "dev": "pnpm --filter @state-flow/visualizer dev",
+    "build": "pnpm --filter @state-flow/visualizer build",
+    "preview": "pnpm --filter @state-flow/visualizer preview",
+    "clean": "rm -rf dist packages/*/dist",
+    "lint": "pnpm --filter \"./packages/*\" lint",
+    "extract": "pnpm --filter @state-flow/extractor extract",
+    "extract:all": "pnpm --filter @state-flow/extractor extract:all && cp -r examples/graphs/* packages/visualizer/public/graphs/"
   },
   "devDependencies": {
-    "@types/dagre": "^0.7.54",
-    "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
-    "autoprefixer": "^10.4.21",
-    "esbuild": "^0.25.0",
-    "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.3"
+    "typescript": "~5.8.2"
   }
 }

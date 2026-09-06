@@ -192,6 +192,10 @@ const RenderEdge = ({
   const pathData = renderEdgePath(pts);
   const { x: midX, y: midY } = getPathMidpoint(pts);
 
+  const MIN_WIDTH = 28;
+  const labelWidth = edge.label?.length ? Math.max(MIN_WIDTH, edge.label?.length * 6) + 10 : MIN_WIDTH;
+  console.log({ len: edge.label?.length, labelWidth });
+
   return (
     <g
       key={edge.id}
@@ -228,9 +232,9 @@ const RenderEdge = ({
       {edge.label && (
         <g transform={`translate(${midX}, ${midY})`}>
           <rect
-            x="-28"
+            x={-labelWidth / 2}
             y="-8"
-            width="56"
+            width={labelWidth}
             height="16"
             rx="8"
             fill="#171717"
